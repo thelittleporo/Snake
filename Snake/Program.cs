@@ -20,7 +20,7 @@ internal class Program
                       "|              |\n" +
                       "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯";
 
-        Welcome_to_Snake();
+        ShowWelcomeScreen();
         Console.WriteLine(cage);
         Console.SetCursorPosition(cursorLeft, cursorTop);
         Console.WriteLine(snakeHead);
@@ -155,7 +155,7 @@ internal class Program
     }
 
 
-    private static void Welcome_to_Snake()
+    private static void ShowWelcomeScreen()
     {
         Console.WriteLine("=========================");
         Console.WriteLine("        SNAKE           ");
