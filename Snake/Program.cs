@@ -1,15 +1,19 @@
-﻿namespace Snake2;
+﻿using System.Data;
+using System.Net.Cache;
+using System.Security.Cryptography;
+using System.Threading.Tasks;
+
+namespace Snake2;
 
 internal class Program
 {
-    static Task Main(string[] args)
+    static async Task Main(string[] args)
     {
         Random random = new Random();
         int randomNumber = random.Next(0, 105); //Für Früchte später
         int cursorLeft = 7;
         int cursorTop = 4;
         string snakeHead = ">";
-
         string cage = "________________\n" +
                       "|              |\n" +
                       "|              |\n" +
@@ -19,142 +23,24 @@ internal class Program
                       "|              |\n" +
                       "|              |\n" +
                       "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯";
+        bool isGameOver = false;
+        bool isEingabe = false;
 
         ShowWelcomeScreen();
-        Console.WriteLine(cage);
-        Console.SetCursorPosition(cursorLeft, cursorTop);
-        Console.WriteLine(snakeHead);
-        Console.WriteLine("\n\n\n\n\nW,A,S,D zum Steuern verwenden!");
-        var input = Console.ReadKey(true);
-        Console.CursorVisible = false;
-        TextWriter standardOutput = Console.Out; //Standard Output des Konsolentexts speicher - Text wird angezeigt
-
-        while (true)
+        InitializeGame(cage, cursorLeft, cursorTop, snakeHead);
+        
+        
+        
+        while (isGameOver == false)
         {
-
-            //if (input.Key == ConsoleKey.D)
-            //{
-            //    while (cursorLeft < 14 && !(Console.KeyAvailable))
-            //    {
-            //        Console.SetOut(standardOutput);
-            //        Console.SetCursorPosition(cursorLeft, cursorTop);
-            //        await Task.Delay(100);
-            //        Console.WriteLine(" ");
-            //        cursorLeft = cursorLeft + 1;
-            //        Console.SetCursorPosition(cursorLeft, cursorTop);
-            //        Console.WriteLine(snakeHead);
-            //        await Task.Delay(100);
-            //    }
-            //    Console.SetOut(TextWriter.Null); //Text wird in Konsole nicht angezeigt
-            //    Console.ReadKey(false); //Um den Bool Console.KeyAvailable zurückzusetzen
-            //}
-            //if (input.Key == ConsoleKey.A)
-            //{
-            //    while (cursorLeft > 1 && !(Console.KeyAvailable))
-            //    {
-            //        Console.SetOut(standardOutput);
-            //        Console.SetCursorPosition(cursorLeft, cursorTop);
-            //        await Task.Delay(100);
-            //        Console.WriteLine(" ");
-            //        cursorLeft = cursorLeft - 1;
-            //        Console.SetCursorPosition(cursorLeft, cursorTop);
-            //        Console.WriteLine(snakeHead);
-            //        await Task.Delay(100);
-            //    }
-            //    Console.SetOut(TextWriter.Null); //Text wird in Konsole nicht angezeigt
-            //    Console.ReadKey(false); //Um den Bool Console.KeyAvailable zurückzusetzen
-
-            //}
-
-            ////!(Console.KeyAvailable) - solange true, BIS Taste gedrückt wird
-            //while (!(Console.KeyAvailable && input.Key == ConsoleKey.D) && cursorLeft < 14)    //https://stackoverflow.com/a/24424239
-            //{
-            //    Console.SetOut(standardOutput);
-            //    Console.SetCursorPosition(cursorLeft, cursorTop);
-            //    await Task.Delay(100);
-            //    Console.WriteLine(" ");
-            //    cursorLeft = cursorLeft + 1;
-            //    Console.SetCursorPosition(cursorLeft, cursorTop);
-            //    Console.WriteLine(snakeHead);
-            //    await Task.Delay(100);
-            //}
-            //Console.SetOut(TextWriter.Null); //Text wird in Konsole nicht angezeigt
-            //Console.ReadKey(false); //Um den Bool Console.KeyAvailable zurückzusetzen
-
-
-            //while (!(Console.KeyAvailable && input.Key == ConsoleKey.A) && cursorLeft > 1)
-            //{
-            //    Console.SetOut(standardOutput);
-            //    Console.SetCursorPosition(cursorLeft, cursorTop);
-            //    await Task.Delay(100);
-            //    Console.WriteLine(" ");
-            //    cursorLeft = cursorLeft - 1;
-            //    Console.SetCursorPosition(cursorLeft, cursorTop);
-            //    Console.WriteLine(snakeHead);
-            //    await Task.Delay(100);
-            //}
-            //Console.SetOut(TextWriter.Null); //Text wird in Konsole nicht angezeigt
-            //Console.ReadKey(false); //Um den Bool Console.KeyAvailable zurückzusetzen
-
-
-            //if (input.Key == ConsoleKey.D)
-            //{
-            //    for (int i = cursorLeft; i < 14; i++)
-            //    {
-            //        Console.SetCursorPosition(cursorLeft, cursorTop);
-            //        Console.WriteLine(" ");
-            //        await Task.Delay(100);
-            //        cursorLeft = cursorLeft + 1;
-            //        Console.SetCursorPosition(cursorLeft, cursorTop);
-            //        Console.WriteLine(snakeHead);
-            //        await Task.Delay(100);
-            //    }
-            //}
-            //else if (input.Key == ConsoleKey.A)
-            //{
-            //    for (int i = cursorLeft; i > 1; i--)
-            //    {
-            //        Console.SetCursorPosition(cursorLeft, cursorTop);
-            //        Console.WriteLine(" ");
-            //        await Task.Delay(100);
-            //        cursorLeft = cursorLeft - 1;
-            //        Console.SetCursorPosition(cursorLeft, cursorTop);
-            //        Console.WriteLine(snakeHead);
-            //        await Task.Delay(100);
-            //    }
-            //}
-            //else if (input.Key == ConsoleKey.S)
-            //{
-            //    for (int i = cursorTop; i < 7; i++)
-            //    {
-            //        Console.SetCursorPosition(cursorLeft, cursorTop);
-            //        Console.WriteLine(" ");
-            //        await Task.Delay(100);
-            //        cursorTop = cursorTop + 1;
-            //        Console.SetCursorPosition(cursorLeft, cursorTop);
-            //        Console.WriteLine(snakeHead);
-            //        await Task.Delay(100);
-            //    }
-            //}
-            //else if (input.Key == ConsoleKey.W)
-            //{
-            //    //Schlange läuft nach oben
-            //    for (int i = cursorTop; i > 1; i--)
-            //    {
-            //        Console.SetCursorPosition(cursorLeft, cursorTop);
-            //        Console.WriteLine(" ");
-            //        await Task.Delay(100);
-            //        cursorTop = cursorTop - 1;
-            //        Console.SetCursorPosition(cursorLeft, cursorTop);
-            //        Console.WriteLine(snakeHead);
-            //        await Task.Delay(100);
-            //    }
-            //}
-            Console.ReadKey();
+            //Bewegung bzw. Abfrage, ob es eine Änderung im Cursor gibt?
+            // - 
+            Console.SetCursorPosition(cursorLeft, cursorTop);
+            await Task.Delay(200);      
+           
         }
+        Console.ReadKey();
     }
-
-
     private static void ShowWelcomeScreen()
     {
         Console.WriteLine("=========================");
@@ -164,5 +50,15 @@ internal class Program
         Console.WriteLine("\nPress any Key to Play!");
         Console.ReadKey();
         Console.Clear();
+    }
+    private static void InitializeGame(string cage, int cursorLeft, int cursorTop, string snakeHead)
+    {
+        Console.WriteLine(cage);
+        Console.SetCursorPosition(cursorLeft, cursorTop);
+        Console.WriteLine(snakeHead);
+        Console.WriteLine("\n\n\n\n\nW,A,S,D zum Steuern verwenden!");
+        var input = Console.ReadKey(true);
+        Console.CursorVisible = false;
+        TextWriter standardOutput = Console.Out; //Standard Output des Konsolentexts speicher - Text wird angezeigt
     }
 }
