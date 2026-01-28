@@ -29,28 +29,21 @@ internal class Program
         InitializeGame(cage, cursorLeft, cursorTop, snakeHead);
 
 
-        bool isMovementKey = false;
         List<char> movementkeys = new List<char>()
         {
            'W'
         };
 
-        string LastPressedKey = "";
-        string CurrentPressedKey = "";
+        string currentPressedKey = "";
 
         while (isGameOver == false)
         {
             if (Console.KeyAvailable) //Wenn Taste gedrückt
             {
-                CurrentPressedKey = Console.ReadKey(true).ToString();
+                currentPressedKey = Console.ReadKey(true).Key.ToString();
             }
 
-            if (CurrentPressedKey == LastPressedKey)
-            {
-                LastPressedKey = CurrentPressedKey;
-            }
-
-            if (IsPressedKeyMovementKey(CurrentPressedKey, movementkeys))
+            if (IsPressedKeyMovementKey(currentPressedKey, movementkeys))
             {
                 cursorLeft = cursorLeft + 1;
                 Console.SetCursorPosition(cursorLeft, cursorTop);
@@ -65,7 +58,10 @@ internal class Program
     private static bool IsPressedKeyMovementKey(string? pressedKey, List<char> movementkeys)
     {
         //TODO: implementieren
-        return true;
+        if (pressedKey != "W")
+            return false;
+        else
+            return true;
     }
 
     private static void ShowWelcomeScreen()
