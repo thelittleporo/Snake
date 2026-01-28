@@ -24,23 +24,50 @@ internal class Program
                       "|              |\n" +
                       "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯";
         bool isGameOver = false;
-        bool isEingabe = false;
 
         ShowWelcomeScreen();
         InitializeGame(cage, cursorLeft, cursorTop, snakeHead);
-        
-        
-        
+
+
+        bool isMovementKey = false;
+        List<char> movementkeys = new List<char>()
+        {
+           'W'
+        };
+
+        string LastPressedKey = "";
+        string CurrentPressedKey = "";
+
         while (isGameOver == false)
         {
-            //Bewegung bzw. Abfrage, ob es eine Änderung im Cursor gibt?
-            // - 
-            Console.SetCursorPosition(cursorLeft, cursorTop);
+            if (Console.KeyAvailable) //Wenn Taste gedrückt
+            {
+                CurrentPressedKey = Console.ReadKey(true).ToString();
+            }
+
+            if (CurrentPressedKey == LastPressedKey)
+            {
+                LastPressedKey = CurrentPressedKey;
+            }
+
+            if (IsPressedKeyMovementKey(CurrentPressedKey, movementkeys))
+            {
+                cursorLeft = cursorLeft + 1;
+                Console.SetCursorPosition(cursorLeft, cursorTop);
+                Console.Write(snakeHead);
+            }
             await Task.Delay(200);      
            
         }
         Console.ReadKey();
     }
+
+    private static bool IsPressedKeyMovementKey(string? pressedKey, List<char> movementkeys)
+    {
+        //TODO: implementieren
+        return true;
+    }
+
     private static void ShowWelcomeScreen()
     {
         Console.WriteLine("=========================");
