@@ -47,6 +47,7 @@ internal class Program
             if (IsPressedKeyMovementKey(currentPressedKey) /*movementkeys*/) //Bewegungstaste?
             {
                 //aktuelle Position des Schlangenkopfes löschen und warten
+                
                 Console.SetCursorPosition(cursorLeft, cursorTop);
                 await Task.Delay(200);
                 Console.Write(" ");
@@ -54,70 +55,99 @@ internal class Program
                 if (currentPressedKey == "W")
                 {
                     cursorTop = cursorTop - 1;
-                    Console.SetCursorPosition(cursorLeft, cursorTop);
-                    Console.Write(snakeHead);
+                    ShowSnakeHead(cursorLeft, cursorTop, snakeHead);
                     currentMovement = "W";
+                    isGameOver = CheckGameOver(cursorTop, cursorLeft);
                 }
                 if (currentPressedKey == "A" /*&& cursorLeft > 1*/)
                 {
                     cursorLeft = cursorLeft - 1;
-                    Console.SetCursorPosition(cursorLeft, cursorTop);
-                    Console.Write(snakeHead);
+                    ShowSnakeHead(cursorLeft, cursorTop, snakeHead);
                     currentMovement = "A";
+                    isGameOver = CheckGameOver(cursorTop, cursorLeft);
                 }
                 if (currentPressedKey == "S")
                 {
                     cursorTop = cursorTop + 1;
-                    Console.SetCursorPosition(cursorLeft, cursorTop);
-                    Console.Write(snakeHead);
+                    ShowSnakeHead(cursorLeft, cursorTop, snakeHead);
                     currentMovement = "S";
+                    isGameOver = CheckGameOver(cursorTop, cursorLeft);
                 }
                 if (currentPressedKey == "D")
                 {
                     cursorLeft = cursorLeft + 1;
-                    Console.SetCursorPosition(cursorLeft, cursorTop);
-                    Console.Write(snakeHead);
+                    ShowSnakeHead(cursorLeft, cursorTop, snakeHead);
                     currentMovement = "D";
+                    isGameOver = CheckGameOver(cursorTop, cursorLeft);
                 }
             }
             else
             {
-                //aktuelle Position des Schlangenkopfes löschen und warten
-                Console.SetCursorPosition(cursorLeft, cursorTop);
-                await Task.Delay(200);
-                Console.Write(" ");
-
                 if (currentMovement == "W")
                 {
                     cursorTop = cursorTop - 1;
+                    ShowSnakeHead(cursorLeft, cursorTop, snakeHead);
                     Console.SetCursorPosition(cursorLeft, cursorTop);
-                    Console.Write(snakeHead);
+                    await Task.Delay(200);
+                    Console.Write(" ");
                 }
                 if (currentMovement == "A")
                 {
                     cursorLeft = cursorLeft - 1;
-                    Console.SetCursorPosition(cursorLeft, cursorTop);
-                    Console.Write(snakeHead);
+                    ShowSnakeHead(cursorLeft, cursorTop, snakeHead);
                     currentMovement = "A";
+                    Console.SetCursorPosition(cursorLeft, cursorTop);
+                    await Task.Delay(200);
+                    Console.Write(" ");
                 }
                 if (currentMovement == "S")
                 {
                     cursorTop = cursorTop + 1;
-                    Console.SetCursorPosition(cursorLeft, cursorTop);
-                    Console.Write(snakeHead);
+                    ShowSnakeHead(cursorLeft, cursorTop, snakeHead);
                     currentMovement = "S";
+                    Console.SetCursorPosition(cursorLeft, cursorTop);
+                    await Task.Delay(200);
+                    Console.Write(" ");
                 }
                 if (currentMovement == "D")
                 {
                     cursorLeft = cursorLeft + 1;
-                    Console.SetCursorPosition(cursorLeft, cursorTop);
-                    Console.Write(snakeHead);
+                    ShowSnakeHead(cursorLeft, cursorTop, snakeHead);
                     currentMovement = "D";
+                    Console.SetCursorPosition(cursorLeft, cursorTop);
+                    await Task.Delay(200);
+                    Console.Write(" ");
                 }
             }
         }
+        ShowGameOverScreen();
     }
-    
+
+    private static void ShowGameOverScreen()
+    {
+        Console.Clear();
+        Console.WriteLine("====================");
+        Console.WriteLine("     Game Over!");
+        Console.ReadKey();
+    }
+
+    private static bool CheckGameOver(int cursorTop, int cursorLeft)
+    {
+        if (cursorTop <= 0 || cursorLeft <= 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private static void ShowSnakeHead(int cursorLeft, int cursorTop, string snakeHead)
+    {
+        Console.SetCursorPosition(cursorLeft, cursorTop);
+        Console.Write(snakeHead);
+    }
 
     private static bool IsPressedKeyMovementKey(string? pressedKey/*, List<char> movementkeys*/)
     {
