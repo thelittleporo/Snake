@@ -38,30 +38,54 @@ internal class Program
 
         while (isGameOver == false)
         {
-            if (Console.KeyAvailable) //Wenn Taste gedrückt
+            if (Console.KeyAvailable) //Wenn Taste gedrückt wird
             {
                 currentPressedKey = Console.ReadKey(true).Key.ToString();
             }
 
             if (IsPressedKeyMovementKey(currentPressedKey, movementkeys))
             {
-                cursorLeft = cursorLeft + 1;
+                //aktuelle Position des Schlangenkopfes löschen
                 Console.SetCursorPosition(cursorLeft, cursorTop);
-                Console.Write(snakeHead);
+                await Task.Delay(200);
+                Console.Write(" ");
+
+                if (currentPressedKey == "W")
+                {
+                    cursorTop = cursorTop - 1;
+                    Console.SetCursorPosition(cursorLeft, cursorTop);
+                    Console.Write(snakeHead);
+                }
+                if (currentPressedKey == "A")
+                {
+                    cursorLeft = cursorLeft - 1;
+                    Console.SetCursorPosition(cursorLeft, cursorTop);
+                    Console.Write(snakeHead);
+                }
+                if (currentPressedKey == "S")
+                {
+                    cursorTop = cursorTop + 1;
+                    Console.SetCursorPosition(cursorLeft, cursorTop);
+                    Console.Write(snakeHead);
+                }
+                if (currentPressedKey == "D")
+                {
+                    cursorLeft = cursorLeft + 1;
+                    Console.SetCursorPosition(cursorLeft, cursorTop);
+                    Console.Write(snakeHead);
+                }
             }
-            await Task.Delay(200);      
-           
+                await Task.Delay(200);                 
         }
         Console.ReadKey();
     }
 
     private static bool IsPressedKeyMovementKey(string? pressedKey, List<char> movementkeys)
     {
-        //TODO: implementieren
-        if (pressedKey != "W")
-            return false;
-        else
+        if (pressedKey == "W" || pressedKey == "A" || pressedKey == "S" || pressedKey == "D")
             return true;
+        else
+            return false; //false führt aktuell dazu, dass die Bewegung anhält
     }
 
     private static void ShowWelcomeScreen()
