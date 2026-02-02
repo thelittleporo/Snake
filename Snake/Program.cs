@@ -5,6 +5,7 @@ using System.Net.Cache;
 using System.Numerics;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Snake2;
 
@@ -162,10 +163,22 @@ internal class Program
     }
     private static void DrawGamePanel(int cursorVertikal, int cursorHorizontal, string snakeHead)
     {
+        int horizonfield;
+        int verticalfield;
+        Console.WriteLine("Tipp: Für schöneres Ergebnis ungerade Zahlen eingeben :D\n");       
         Console.Write("Please enter field size horizontal (default 15): ");
-        int horizonfield = Convert.ToInt32(Console.ReadLine());
-        Console.Write("Please enter field size vertical(default 8): ");
-        int verticalfield = Convert.ToInt32(Console.ReadLine());
+        
+        while (!int.TryParse(Console.ReadLine(), out horizonfield))
+        {
+            Console.Write("This is not valid input. Please enter an integer value: ");
+        }
+
+        Console.Write("Please enter field size vertical(default 7): ");
+        
+        while (!int.TryParse(Console.ReadLine(), out verticalfield))
+        {
+            Console.Write("This is not valid input. Please enter an integer value: ");
+        }      
         Console.Clear();
 
         //Cage erstellen
