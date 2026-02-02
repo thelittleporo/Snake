@@ -1,5 +1,8 @@
 ﻿using System.Data;
+using System.Diagnostics.Metrics;
+using System.Drawing;
 using System.Net.Cache;
+using System.Numerics;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 
@@ -14,19 +17,10 @@ internal class Program
         int cursorLeft = 7;
         int cursorTop = 4;
         string snakeHead = ">";
-        string cage = "________________\n" +
-                      "|              |\n" +
-                      "|              |\n" +
-                      "|              |\n" +
-                      "|              |\n" +
-                      "|              |\n" +
-                      "|              |\n" +
-                      "|              |\n" +
-                      "¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯";
         bool isGameOver = false;
 
-        ShowWelcomeScreen();
-        InitializeGame(cage, cursorLeft, cursorTop, snakeHead);
+        //ShowWelcomeScreen();
+        DrawGamePanel(cursorLeft, cursorTop, snakeHead);
 
         //List<char> movementkeys = new List<char>()
         //{
@@ -35,7 +29,6 @@ internal class Program
 
         string currentPressedKey = "";
         var currentMovement = "";
-
 
         while (isGameOver == false)
         {
@@ -122,18 +115,17 @@ internal class Program
         }
         ShowGameOverScreen();
     }
-
     private static void ShowGameOverScreen()
     {
         Console.Clear();
-        Console.WriteLine("====================");
-        Console.WriteLine("     Game Over!");
+        Console.WriteLine("=====================");
+        Console.WriteLine("     Game Over!   ");
         Console.ReadKey();
     }
 
     private static bool CheckGameOver(int cursorTop, int cursorLeft)
     {
-        if (cursorTop <= 0 || cursorLeft <= 0)
+        if (cursorTop <= 0 || cursorLeft <= 0 || cursorTop >= 8 || cursorLeft >= 15)
         {
             return true;
         }
@@ -164,15 +156,43 @@ internal class Program
         Console.WriteLine("      ++++++++      \r\n    ++        ++    \r\n   ++          ++   \r\n   + ++      ++ +   \r\n   ++          ++   \r\n    ++         +    \r\n     + +    + ++    \r\n      ++++++++      \r\n         +++        \r\n        ++++        \r\n       ++  ++       ");
         Console.WriteLine("=========================");
         Console.WriteLine("\nPress any Key to Play!");
+        Console.WriteLine("\n\nUse W,A,S,D");
         Console.ReadKey();
         Console.Clear();
     }
-    private static void InitializeGame(string cage, int cursorLeft, int cursorTop, string snakeHead)
+    private static void DrawGamePanel(int cursorVertikal, int cursorHorizontal, string snakeHead)
     {
-        Console.WriteLine(cage);
-        Console.SetCursorPosition(cursorLeft, cursorTop);
+        Console.Write("Please enter field size horizontal (default 15): ");
+        int horizonfield = Convert.ToInt32(Console.ReadLine());
+        Console.Write("Please enter field size vertical(default 8): ");
+        int verticalfield = Convert.ToInt32(Console.ReadLine());
+        Console.Clear();
+
+        //Cage erstellen
+        for (int i = horizonfield; i > 0; i--)
+        {
+            Console.Write("_");
+        }
+        for (int i = verticalfield; i > 0; i--)
+        {
+            Console.Write("\n|");
+            for (int n = horizonfield-2; n > 0; n--)
+            {
+                Console.Write(" ");
+            }
+            Console.Write("|");
+        }
+        Console.WriteLine();
+        for (int i = horizonfield; i > 0; i--)
+        {
+            Console.Write("¯");
+        }
+        
+        cursorHorizontal = (horizonfield / 2 + 1);
+        cursorVertikal = verticalfield / 2;
+
+        Console.SetCursorPosition(cursorVertikal, cursorHorizontal);
         Console.WriteLine(snakeHead);
-        Console.WriteLine("\n\n\n\n\nW,A,S,D zum Steuern verwenden!");
         //var input = Console.ReadKey(true);
         Console.CursorVisible = false;
         //TextWriter standardOutput = Console.Out; //Standard Output des Konsolentexts speicher - Text wird angezeigt
