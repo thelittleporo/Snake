@@ -13,25 +13,20 @@ internal class Program
 {
     static async Task Main(string[] args)
     {
-        Random random = new Random();
-        int randomNumber = random.Next(0, 105); //Für Früchte später
-        int cursorLeft = 7;
-        int cursorTop = 4;
+        //Random random = new Random();
+        int cursorHorizontal = 0;
+        int cursorVertikal = 0;
         string snakeHead = ">";
         bool isGameOver = false;
 
-        // ShowWelcomeScreen();
-        int[] returnvalue = DrawGamePanel(cursorLeft, cursorTop, snakeHead);
+        //ShowWelcomeScreen();
+        int[] returnvalue = DrawGamePanel(cursorHorizontal, cursorVertikal, snakeHead);
 
-        cursorLeft = returnvalue[0];
-        cursorTop = returnvalue[1];
-        int TempTop = cursorTop * 2;
-        int TempLeft = cursorLeft * 2;
+        int horizonfield = returnvalue[0];
+        int verticalfield = returnvalue[1];
 
-        //List<char> movementkeys = new List<char>()
-        //{
-        //   'W'
-        //};
+        cursorHorizontal = horizonfield / 2;
+        cursorVertikal = verticalfield / 2 + 1;
 
         string currentPressedKey = "";
         var currentMovement = "";
@@ -47,73 +42,73 @@ internal class Program
             {
                 //aktuelle Position des Schlangenkopfes löschen und warten
                 
-                Console.SetCursorPosition(cursorLeft, cursorTop);
+                Console.SetCursorPosition(cursorHorizontal, cursorVertikal);
                 await Task.Delay(200);
                 Console.Write(" ");
 
                 if (currentPressedKey == "W")
                 {
-                    cursorTop = cursorTop - 1;
-                    ShowSnakeHead(cursorLeft, cursorTop, snakeHead);
+                    cursorVertikal = cursorVertikal - 1;
+                    ShowSnakeHead(cursorHorizontal, cursorVertikal, snakeHead);
                     currentMovement = "W";
-                    isGameOver = CheckGameOver(cursorTop, cursorLeft, TempTop, TempLeft);
+                    isGameOver = CheckGameOver(cursorVertikal, cursorHorizontal, horizonfield, verticalfield);
                 }
                 if (currentPressedKey == "A" /*&& cursorLeft > 1*/)
                 {
-                    cursorLeft = cursorLeft - 1;
-                    ShowSnakeHead(cursorLeft, cursorTop, snakeHead);
+                    cursorHorizontal = cursorHorizontal - 1;
+                    ShowSnakeHead(cursorHorizontal, cursorVertikal, snakeHead);
                     currentMovement = "A";
-                    isGameOver = CheckGameOver(cursorTop, cursorLeft, TempTop, TempLeft);
+                    isGameOver = CheckGameOver(cursorVertikal, cursorHorizontal, horizonfield, verticalfield);
                 }
                 if (currentPressedKey == "S")
                 {
-                    cursorTop = cursorTop + 1;
-                    ShowSnakeHead(cursorLeft, cursorTop, snakeHead);
+                    cursorVertikal = cursorVertikal + 1;
+                    ShowSnakeHead(cursorHorizontal, cursorVertikal, snakeHead);
                     currentMovement = "S";
-                    isGameOver = CheckGameOver(cursorTop, cursorLeft, TempTop, TempLeft);
+                    isGameOver = CheckGameOver(cursorVertikal, cursorHorizontal, horizonfield, verticalfield);
                 }
                 if (currentPressedKey == "D")
                 {
-                    cursorLeft = cursorLeft + 1;
-                    ShowSnakeHead(cursorLeft, cursorTop, snakeHead);
+                    cursorHorizontal = cursorHorizontal + 1;
+                    ShowSnakeHead(cursorHorizontal, cursorVertikal, snakeHead);
                     currentMovement = "D";
-                    isGameOver = CheckGameOver(cursorTop, cursorLeft, TempTop, TempLeft);
+                    isGameOver = CheckGameOver(cursorVertikal, cursorHorizontal, horizonfield, verticalfield);
                 }
             }
             else
             {
                 if (currentMovement == "W")
                 {
-                    cursorTop = cursorTop - 1;
-                    ShowSnakeHead(cursorLeft, cursorTop, snakeHead);
-                    Console.SetCursorPosition(cursorLeft, cursorTop);
+                    cursorVertikal = cursorVertikal - 1;
+                    ShowSnakeHead(cursorHorizontal, cursorVertikal, snakeHead);
+                    Console.SetCursorPosition(cursorHorizontal, cursorVertikal);
                     await Task.Delay(200);
                     Console.Write(" ");
                 }
                 if (currentMovement == "A")
                 {
-                    cursorLeft = cursorLeft - 1;
-                    ShowSnakeHead(cursorLeft, cursorTop, snakeHead);
+                    cursorHorizontal = cursorHorizontal - 1;
+                    ShowSnakeHead(cursorHorizontal, cursorVertikal, snakeHead);
                     currentMovement = "A";
-                    Console.SetCursorPosition(cursorLeft, cursorTop);
+                    Console.SetCursorPosition(cursorHorizontal, cursorVertikal);
                     await Task.Delay(200);
                     Console.Write(" ");
                 }
                 if (currentMovement == "S")
                 {
-                    cursorTop = cursorTop + 1;
-                    ShowSnakeHead(cursorLeft, cursorTop, snakeHead);
+                    cursorVertikal = cursorVertikal + 1;
+                    ShowSnakeHead(cursorHorizontal, cursorVertikal, snakeHead);
                     currentMovement = "S";
-                    Console.SetCursorPosition(cursorLeft, cursorTop);
+                    Console.SetCursorPosition(cursorHorizontal, cursorVertikal);
                     await Task.Delay(200);
                     Console.Write(" ");
                 }
                 if (currentMovement == "D")
                 {
-                    cursorLeft = cursorLeft + 1;
-                    ShowSnakeHead(cursorLeft, cursorTop, snakeHead);
+                    cursorHorizontal = cursorHorizontal + 1;
+                    ShowSnakeHead(cursorHorizontal, cursorVertikal, snakeHead);
                     currentMovement = "D";
-                    Console.SetCursorPosition(cursorLeft, cursorTop);
+                    Console.SetCursorPosition(cursorHorizontal, cursorVertikal);
                     await Task.Delay(200);
                     Console.Write(" ");
                 }
@@ -129,9 +124,9 @@ internal class Program
         Console.ReadKey();
     }
 
-    private static bool CheckGameOver(int cursorTop, int cursorLeft, int TempTop, int TempLeft)
+    private static bool CheckGameOver(int cursorVertikal, int cursorHorizontal, int horizonfield, int verticalfield)
     {
-        if (cursorTop <= 0 || cursorLeft <= 0 || cursorTop >= TempTop || cursorLeft >= TempLeft)
+        if (cursorVertikal <= 0 || cursorHorizontal <= 0 || cursorVertikal == (verticalfield +1) || cursorHorizontal == horizonfield)
         {
             return true;
         }
@@ -141,13 +136,13 @@ internal class Program
         }
     }
 
-    private static void ShowSnakeHead(int cursorLeft, int cursorTop, string snakeHead)
+    private static void ShowSnakeHead(int cursorHorizontal, int cursorVertikal, string snakeHead)
     {
-        Console.SetCursorPosition(cursorLeft, cursorTop);
+        Console.SetCursorPosition(cursorHorizontal, cursorVertikal);
         Console.Write(snakeHead);
     }
 
-    private static bool IsPressedKeyMovementKey(string? pressedKey/*, List<char> movementkeys*/)
+    private static bool IsPressedKeyMovementKey(string? pressedKey)
     {
         if (pressedKey == "W" || pressedKey == "A" || pressedKey == "S" || pressedKey == "D")
             return true;
@@ -169,19 +164,21 @@ internal class Program
     {
         int horizonfield;
         int verticalfield;
+        const int maxwidth = 100;
+        const int maxheight = 25;
+
         Console.WriteLine("Tipp: Für schöneres Ergebnis ungerade Zahlen eingeben!\n");       
         Console.Write("Please enter field size horizontal (default 15): ");
-        
-        while (!int.TryParse(Console.ReadLine(), out horizonfield))
-        {
-            Console.Write("This is not valid input. Please enter an integer value: ");
-        }
 
-        Console.Write("Please enter field size vertical(default 7): ");
-        
-        while (!int.TryParse(Console.ReadLine(), out verticalfield))
+        while (!int.TryParse(Console.ReadLine() , out horizonfield) && horizonfield <= maxwidth)
         {
-            Console.Write("This is not valid input. Please enter an integer value: ");
+            Console.Write("Bitte eine Zahl zwischen 25 und 100 eingeben: ");
+        }
+        Console.Write("Please enter field size vertical (default 7): ");
+        
+        while (!int.TryParse(Console.ReadLine(), out verticalfield) && verticalfield <= maxheight)
+        {
+            Console.Write("Bitte eine Zahl zwischen 25 und 100 eingeben: ");
         }      
         Console.Clear();
 
@@ -205,16 +202,15 @@ internal class Program
             Console.Write("¯");
         }
         
-        cursorHorizontal = (horizonfield / 2 + 1);
-        cursorVertikal = verticalfield / 2;
+        //Cursor in die Mitte des Feldes setzen
+        cursorHorizontal = (horizonfield / 2);
+        cursorVertikal = verticalfield / 2 + 1; //+1, da erste Zeile mitgezählt wird
 
-        Console.SetCursorPosition(cursorVertikal, cursorHorizontal);
+        Console.SetCursorPosition(cursorHorizontal, cursorVertikal);
         Console.WriteLine(snakeHead);
-        //var input = Console.ReadKey(true);
         Console.CursorVisible = false;
-        //TextWriter standardOutput = Console.Out; //Standard Output des Konsolentexts speicher - Text wird angezeigt
 
-        int[] returnvalue = { cursorVertikal, cursorHorizontal };
+        int[] returnvalue = { horizonfield, verticalfield };
         return returnvalue;
     }
 }
