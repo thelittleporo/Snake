@@ -20,8 +20,13 @@ internal class Program
         string snakeHead = ">";
         bool isGameOver = false;
 
-        //ShowWelcomeScreen();
-        DrawGamePanel(cursorLeft, cursorTop, snakeHead);
+        // ShowWelcomeScreen();
+        int[] returnvalue = DrawGamePanel(cursorLeft, cursorTop, snakeHead);
+
+        cursorLeft = returnvalue[0];
+        cursorTop = returnvalue[1];
+        int TempTop = cursorTop * 2;
+        int TempLeft = cursorLeft * 2;
 
         //List<char> movementkeys = new List<char>()
         //{
@@ -51,28 +56,28 @@ internal class Program
                     cursorTop = cursorTop - 1;
                     ShowSnakeHead(cursorLeft, cursorTop, snakeHead);
                     currentMovement = "W";
-                    isGameOver = CheckGameOver(cursorTop, cursorLeft);
+                    isGameOver = CheckGameOver(cursorTop, cursorLeft, TempTop, TempLeft);
                 }
                 if (currentPressedKey == "A" /*&& cursorLeft > 1*/)
                 {
                     cursorLeft = cursorLeft - 1;
                     ShowSnakeHead(cursorLeft, cursorTop, snakeHead);
                     currentMovement = "A";
-                    isGameOver = CheckGameOver(cursorTop, cursorLeft);
+                    isGameOver = CheckGameOver(cursorTop, cursorLeft, TempTop, TempLeft);
                 }
                 if (currentPressedKey == "S")
                 {
                     cursorTop = cursorTop + 1;
                     ShowSnakeHead(cursorLeft, cursorTop, snakeHead);
                     currentMovement = "S";
-                    isGameOver = CheckGameOver(cursorTop, cursorLeft);
+                    isGameOver = CheckGameOver(cursorTop, cursorLeft, TempTop, TempLeft);
                 }
                 if (currentPressedKey == "D")
                 {
                     cursorLeft = cursorLeft + 1;
                     ShowSnakeHead(cursorLeft, cursorTop, snakeHead);
                     currentMovement = "D";
-                    isGameOver = CheckGameOver(cursorTop, cursorLeft);
+                    isGameOver = CheckGameOver(cursorTop, cursorLeft, TempTop, TempLeft);
                 }
             }
             else
@@ -124,9 +129,9 @@ internal class Program
         Console.ReadKey();
     }
 
-    private static bool CheckGameOver(int cursorTop, int cursorLeft)
+    private static bool CheckGameOver(int cursorTop, int cursorLeft, int TempTop, int TempLeft)
     {
-        if (cursorTop <= 0 || cursorLeft <= 0 || cursorTop >= 8 || cursorLeft >= 15)
+        if (cursorTop <= 0 || cursorLeft <= 0 || cursorTop >= TempTop || cursorLeft >= TempLeft)
         {
             return true;
         }
@@ -157,15 +162,14 @@ internal class Program
         Console.WriteLine("      ++++++++      \r\n    ++        ++    \r\n   ++          ++   \r\n   + ++      ++ +   \r\n   ++          ++   \r\n    ++         +    \r\n     + +    + ++    \r\n      ++++++++      \r\n         +++        \r\n        ++++        \r\n       ++  ++       ");
         Console.WriteLine("=========================");
         Console.WriteLine("\nPress any Key to Play!");
-        Console.WriteLine("\n\nUse W,A,S,D");
         Console.ReadKey();
         Console.Clear();
     }
-    private static void DrawGamePanel(int cursorVertikal, int cursorHorizontal, string snakeHead)
+    private static int[] DrawGamePanel(int cursorVertikal, int cursorHorizontal, string snakeHead)
     {
         int horizonfield;
         int verticalfield;
-        Console.WriteLine("Tipp: Für schöneres Ergebnis ungerade Zahlen eingeben :D\n");       
+        Console.WriteLine("Tipp: Für schöneres Ergebnis ungerade Zahlen eingeben!\n");       
         Console.Write("Please enter field size horizontal (default 15): ");
         
         while (!int.TryParse(Console.ReadLine(), out horizonfield))
@@ -209,5 +213,8 @@ internal class Program
         //var input = Console.ReadKey(true);
         Console.CursorVisible = false;
         //TextWriter standardOutput = Console.Out; //Standard Output des Konsolentexts speicher - Text wird angezeigt
+
+        int[] returnvalue = { cursorVertikal, cursorHorizontal };
+        return returnvalue;
     }
 }
