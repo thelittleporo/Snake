@@ -15,11 +15,11 @@ internal class Program
     static async Task Main(string[] args)
     {
         Console.OutputEncoding = Encoding.UTF8; //für Unicode Zeichen
-        const string snakeHead = ">";
+        const string snakeHead = ">"; //🐲
         bool isGameOver = false;
 
 
-        ShowWelcomeScreen();
+        //ShowWelcomeScreen();
 
         int snakePositionX = 0;
         int snakePositionY = 0;
@@ -32,16 +32,20 @@ internal class Program
         snakePositionY = playFieldHeight / 2 + 1;
         string currentPressedKey = "";
         var currentMovement = "";
-        int [] Fruitposition = GetRandomFruitPositions(playFieldWidth, playFieldHeight, snakePositionX, snakePositionY);
+        int[] Fruitposition = GetRandomFruitPositions(playFieldWidth, playFieldHeight, snakePositionX, snakePositionY);
         int fruitPosX = Fruitposition[0];
         int fruitPosY = Fruitposition[1];
         bool isFruitField = false;
+        List<int> ArchiveSnakePosition = new List<int>();
+        int x = 0;
+        int y = 1;
+        bool SaveAllSnakeHeadPositions = false;
 
         //Spiel läuft
         while (isGameOver == false)
         {
             Console.SetCursorPosition(fruitPosX, fruitPosY);
-            Console.WriteLine("*");    // Unicode-Escape f
+            Console.WriteLine("*");
 
             if (Console.KeyAvailable) //Wenn Taste gedrückt wird
             {
@@ -55,79 +59,83 @@ internal class Program
                 await Task.Delay(200);
                 Console.Write(" ");
 
-                if (currentPressedKey == "W")
+                if (currentPressedKey == "W" || currentPressedKey == "A" || currentPressedKey == "S" || currentPressedKey == "D")
                 {
-                    snakePositionY = snakePositionY - 1;
-                    //DoOneTick(snakePositionY, snakePositionX, fruitPosX, fruitPosY, isFruitField, Fruitposition,
-                    //                playFieldWidth, playFieldHeight, snakeHead, isGameOver);
+                    int previeousSnakePositionY = snakePositionY;
+                    int previeousSnakePositionX = snakePositionX;
+
+                    if (SaveAllSnakeHeadPositions)
+                    {
+                        ArchiveSnakePosition.Add(previeousSnakePositionX); ArchiveSnakePosition.Add(previeousSnakePositionY);
+
+                    }
+                    if (currentPressedKey == "W")
+                    {
+                        snakePositionY = snakePositionY - 1;
+                    }
+                    if (currentPressedKey == "A")
+                    {
+                        snakePositionX = snakePositionX - 1;
+                    }
+                    if (currentPressedKey == "S")
+                    {
+                        snakePositionY = snakePositionY + 1;
+                    }
+                    if (currentPressedKey == "D")
+                    {
+                        snakePositionX = snakePositionX + 1;
+                    }
+
                     isFruitField = CheckFruitField(snakePositionY, snakePositionX, fruitPosX, fruitPosY);
+
                     if (isFruitField)
                     {
+                        if (SaveAllSnakeHeadPositions == false)
+                        {
+                            ArchiveSnakePosition.Add(previeousSnakePositionX); ArchiveSnakePosition.Add(previeousSnakePositionY);
+                        }
+                        SaveAllSnakeHeadPositions = true; //Ab jetzt werden ALLE previousPositions gespeichert, um Schlangenkörper zu bewegen                                       
+
+                        Console.SetCursorPosition(ArchiveSnakePosition[x], ArchiveSnakePosition[y]);
+                        Console.WriteLine("+");
+                        await Task.Delay(200);
+                        Console.SetCursorPosition(ArchiveSnakePosition[x], ArchiveSnakePosition[y]);
+                        Console.WriteLine(" ");
+                        //Um beim nächsten Durchlauf auf nächstes Element in der Liste zuzugreifen 
+                        x = x + 2;
+                        y = y + 2;
                         Console.SetCursorPosition(fruitPosX, fruitPosY);
                         Console.WriteLine(" ");
+                        //neue random Fruchtposition erstellen
                         Fruitposition = GetRandomFruitPositions(playFieldWidth, playFieldHeight, snakePositionX, snakePositionY);
                         fruitPosX = Fruitposition[0];
                         fruitPosY = Fruitposition[1];
                     }
                     ShowSnakeHead(snakePositionX, snakePositionY, snakeHead);
-                    currentMovement = "A";
-                    isGameOver = CheckGameOver(snakePositionY, snakePositionX, playFieldWidth, playFieldHeight);
-                    currentMovement = "W";
-                }
-                if (currentPressedKey == "A" /*&& cursorLeft > 1*/)
-                {
-                    snakePositionX = snakePositionX - 1;
-                    isFruitField = CheckFruitField(snakePositionY, snakePositionX, fruitPosX, fruitPosY);
-                    if (isFruitField)
-                    {
-                        Console.SetCursorPosition(fruitPosX, fruitPosY);
-                        Console.WriteLine(" ");
-                        Fruitposition = GetRandomFruitPositions(playFieldWidth, playFieldHeight, snakePositionX, snakePositionY);
-                        fruitPosX = Fruitposition[0];
-                        fruitPosY = Fruitposition[1];
-                    }
-                    ShowSnakeHead(snakePositionX, snakePositionY, snakeHead);
-                    currentMovement = "A";
-                    isGameOver = CheckGameOver(snakePositionY, snakePositionX, playFieldWidth, playFieldHeight);
-                }
-                if (currentPressedKey == "S")
-                {
-                    snakePositionY = snakePositionY + 1;
-                    isFruitField = CheckFruitField(snakePositionY, snakePositionX, fruitPosX, fruitPosY);
-                    if (isFruitField)
-                    {
-                        Console.SetCursorPosition(fruitPosX, fruitPosY);
-                        Console.WriteLine(" ");
-                        Fruitposition = GetRandomFruitPositions(playFieldWidth, playFieldHeight, snakePositionX, snakePositionY);
-                        fruitPosX = Fruitposition[0];
-                        fruitPosY = Fruitposition[1];
-                    }
-                    ShowSnakeHead(snakePositionX, snakePositionY, snakeHead);
-                    currentMovement = "S";
-                    isGameOver = CheckGameOver(snakePositionY, snakePositionX, playFieldWidth, playFieldHeight);
-                }
-                if (currentPressedKey == "D")
-                {
-                    snakePositionX = snakePositionX + 1;
-                    isFruitField = CheckFruitField(snakePositionY, snakePositionX, fruitPosX, fruitPosY);
-                    if (isFruitField)
-                    {
-                        Console.SetCursorPosition(fruitPosX, fruitPosY);
-                        Console.WriteLine(" ");
-                        Fruitposition = GetRandomFruitPositions(playFieldWidth, playFieldHeight, snakePositionX, snakePositionY);
-                        fruitPosX = Fruitposition[0];
-                        fruitPosY = Fruitposition[1];
-                    }
-                    ShowSnakeHead(snakePositionX, snakePositionY, snakeHead);
-                    currentMovement = "D";
+                    currentMovement = currentPressedKey;
                     isGameOver = CheckGameOver(snakePositionY, snakePositionX, playFieldWidth, playFieldHeight);
                 }
             }
             else
             {
-                if (currentMovement == "W")
+                if (currentMovement == "W" || currentMovement == "A" || currentMovement == "S" || currentMovement == "D")
                 {
-                    snakePositionY = snakePositionY - 1;
+                    if (currentPressedKey == "W")
+                    {
+                        snakePositionY = snakePositionY - 1;
+                    }
+                    if (currentPressedKey == "A")
+                    {
+                        snakePositionX = snakePositionX - 1;
+                    }
+                    if (currentPressedKey == "S")
+                    {
+                        snakePositionY = snakePositionY + 1;
+                    }
+                    if (currentPressedKey == "D")
+                    {
+                        snakePositionX = snakePositionX + 1;
+                    }
                     isFruitField = CheckFruitField(snakePositionY, snakePositionX, fruitPosX, fruitPosY);
                     if (isFruitField)
                     {
@@ -138,60 +146,7 @@ internal class Program
                         fruitPosY = Fruitposition[1];
                     }
                     ShowSnakeHead(snakePositionX, snakePositionY, snakeHead);
-                    Console.SetCursorPosition(snakePositionX, snakePositionY);
-                    await Task.Delay(200);
-                    Console.Write(" ");
-                }
-                if (currentMovement == "A")
-                {
-                    snakePositionX = snakePositionX - 1;
-                    isFruitField = CheckFruitField(snakePositionY, snakePositionX, fruitPosX, fruitPosY);
-                    if (isFruitField)
-                    {
-                        Console.SetCursorPosition(fruitPosX, fruitPosY);
-                        Console.WriteLine(" ");
-                        Fruitposition = GetRandomFruitPositions(playFieldWidth, playFieldHeight, snakePositionX, snakePositionY);
-                        fruitPosX = Fruitposition[0];
-                        fruitPosY = Fruitposition[1];
-                    }
-                    ShowSnakeHead(snakePositionX, snakePositionY, snakeHead);
-                    currentMovement = "A";
-                    Console.SetCursorPosition(snakePositionX, snakePositionY);
-                    await Task.Delay(200);
-                    Console.Write(" ");
-                }
-                if (currentMovement == "S")
-                {
-                    snakePositionY = snakePositionY + 1;
-                    isFruitField = CheckFruitField(snakePositionY, snakePositionX, fruitPosX, fruitPosY);
-                    if (isFruitField)
-                    {
-                        Console.SetCursorPosition(fruitPosX, fruitPosY);
-                        Console.WriteLine(" ");
-                        Fruitposition = GetRandomFruitPositions(playFieldWidth, playFieldHeight, snakePositionX, snakePositionY);
-                        fruitPosX = Fruitposition[0];
-                        fruitPosY = Fruitposition[1];
-                    }
-                    ShowSnakeHead(snakePositionX, snakePositionY, snakeHead);
-                    currentMovement = "S";
-                    Console.SetCursorPosition(snakePositionX, snakePositionY);
-                    await Task.Delay(200);
-                    Console.Write(" ");
-                }
-                if (currentMovement == "D")
-                {
-                    snakePositionX = snakePositionX + 1;
-                    isFruitField = CheckFruitField(snakePositionY, snakePositionX, fruitPosX, fruitPosY);
-                    if (isFruitField)
-                    {
-                        Console.SetCursorPosition(fruitPosX, fruitPosY);
-                        Console.WriteLine(" ");
-                        Fruitposition = GetRandomFruitPositions(playFieldWidth, playFieldHeight, snakePositionX, snakePositionY);
-                        fruitPosX = Fruitposition[0];
-                        fruitPosY = Fruitposition[1];
-                    }
-                    ShowSnakeHead(snakePositionX, snakePositionY, snakeHead);
-                    currentMovement = "D";
+                    //ShowSnakeBody();
                     Console.SetCursorPosition(snakePositionX, snakePositionY);
                     await Task.Delay(200);
                     Console.Write(" ");
@@ -201,23 +156,9 @@ internal class Program
         ShowGameOverScreen();
     }
 
-    //private static void DoOneTick(int snakePositionY, int snakePositionX, int fruitPosX, int fruitPosY, bool isFruitField, int[] Fruitposition,
-    //                                int playFieldWidth, int playFieldHeight, string snakeHead, bool isGameOver)
+    //private static void ShowSnakeBody()
     //{
-    //    while (isGameOver == false)
-    //    {
-    //        isFruitField = CheckFruitField(snakePositionY, snakePositionX, fruitPosX, fruitPosY);
-    //        if (isFruitField)
-    //        {
-    //            Console.SetCursorPosition(fruitPosX, fruitPosY);
-    //            Console.WriteLine(" ");
-    //            Fruitposition = GetRandomFruitPositions(playFieldWidth, playFieldHeight, snakePositionX, snakePositionY);
-    //            fruitPosX = Fruitposition[0];
-    //            fruitPosY = Fruitposition[1];
-    //        }
-    //        ShowSnakeHead(snakePositionX, snakePositionY, snakeHead);
-    //        isGameOver = CheckGameOver(snakePositionY, snakePositionX, playFieldWidth, playFieldHeight);
-    //    }
+    //    throw new NotImplementedException();
     //}
 
     private static bool CheckFruitField(int snakePositionY, int snakePositionX, int fruitPosX, int fruitPosY)
@@ -235,8 +176,8 @@ internal class Program
     private static int[] GetRandomFruitPositions(int playFieldWidth, int playFieldHeight, int snakePositionX, int snakePositionY)
     {
         Random random = new Random();
-        int fruitPosX = random.Next(1, playFieldWidth-2);
-        int fruitPosY = random.Next(1, playFieldHeight-1);
+        int fruitPosX = random.Next(1, playFieldWidth - 2);
+        int fruitPosY = random.Next(1, playFieldHeight - 1);
         if (fruitPosX == snakePositionX && fruitPosY == snakePositionY)
         {
             fruitPosX = fruitPosX + 2;
@@ -299,24 +240,27 @@ internal class Program
         const int maxHeight = 25;
         const int minHeight = 5;
 
-        Console.WriteLine("Tipp: Für schöneres Ergebnis ungerade Zahlen eingeben!\n");       
-        Console.Write("Please enter field size horizontal (default 15): ");
+        //Console.WriteLine("Tipp: Für schöneres Ergebnis ungerade Zahlen eingeben!\n");
+        //Console.Write("Please enter field size horizontal (default 15): ");
 
-        while (!int.TryParse(Console.ReadLine() , out playFieldWidth) || playFieldWidth <= maxWidth && playFieldWidth <= minWidth)
-        {
-            Console.Write($"Bitte eine Zahl zwischen {minWidth} und {maxWidth} eingeben: ");
-        }
-        Console.Write("Please enter field size vertical (default 7): ");
-        
-        while (!int.TryParse(Console.ReadLine(), out playFieldHeight) || playFieldHeight <= maxHeight && playFieldHeight <= minHeight)
-        {
-            Console.Write($"Bitte eine Zahl zwischen {minHeight} und {maxHeight} eingeben: ");
-        }      
+        //while (!int.TryParse(Console.ReadLine(), out playFieldWidth) || playFieldWidth <= maxWidth && playFieldWidth <= minWidth)
+        //{
+        //    Console.Write($"Bitte eine Zahl zwischen {minWidth} und {maxWidth} eingeben: ");
+        //}
+        //Console.Write("Please enter field size vertical (default 7): ");
+
+        //while (!int.TryParse(Console.ReadLine(), out playFieldHeight) || playFieldHeight <= maxHeight && playFieldHeight <= minHeight)
+        //{
+        //    Console.Write($"Bitte eine Zahl zwischen {minHeight} und {maxHeight} eingeben: ");
+        //}
+        playFieldWidth = 15;
+        playFieldHeight = 7;
+
         Console.Clear();
 
         //Cage erstellen
         Console.Write("╔");
-        for (int i = playFieldWidth-2; i > 0; i--) //-2, da die Ecken abgezogen werden
+        for (int i = playFieldWidth - 2; i > 0; i--) //-2, da die Ecken abgezogen werden
         {
             Console.Write("═");
         }
@@ -324,7 +268,7 @@ internal class Program
         for (int i = playFieldHeight; i > 0; i--)
         {
             Console.Write("\n║");
-            for (int n = playFieldWidth-2; n > 0; n--)
+            for (int n = playFieldWidth - 2; n > 0; n--)
             {
                 Console.Write(" ");
             }
@@ -332,7 +276,7 @@ internal class Program
         }
         Console.WriteLine();
         Console.Write("╚");
-        for (int i = playFieldWidth-2; i > 0; i--) //-2, da die Ecken abgezogen werden
+        for (int i = playFieldWidth - 2; i > 0; i--) //-2, da die Ecken abgezogen werden
         {
             Console.Write("═");
         }
