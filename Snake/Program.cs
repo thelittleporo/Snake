@@ -46,11 +46,13 @@ internal class Program
         snakePositions.Add(snakePositionY);
 
         string currentPressedKey = "";
+        string lastPressedKey = "";
         var currentMovement = "";
 
         int fruitPosX = 0;
         int fruitPosY = 0;
         bool isFruitExisting = false;
+
 
 
 
@@ -70,11 +72,17 @@ internal class Program
             int snakeEndpositionY = snakePositions[snakePositions.Count - 1];
 
             //Wenn Taste gedrückt wird
-            if (Console.KeyAvailable) 
-            {
-                currentPressedKey = Console.ReadKey(true).Key.ToString(); //Speicher den Wert der Taste in eine Variable
-            }
+            if (Console.KeyAvailable)
+            { 
+                //Speicher den Wert der Taste in eine Variable
+                currentPressedKey = Console.ReadKey(true).Key.ToString();
 
+                if (currentPressedKey == lastPressedKey)
+                {
+                    continue;
+                }
+                lastPressedKey = currentPressedKey;
+            }
             if (IsPressedKeyMovementKey(currentPressedKey))
             {
                 //aktuelle Position des Schlangenkopfes löschen
@@ -101,8 +109,7 @@ internal class Program
                 currentMovement = currentPressedKey;
                 isGameOver = CheckGameOver(snakePositionY, snakePositionX, playFieldWidth, playFieldHeight);
                 currentPressedKey = "";
-            }
-            
+            }          
             else
             {
                 if (currentMovement == "W" || currentMovement == "A" || currentMovement == "S" || currentMovement == "D")
