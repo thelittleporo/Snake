@@ -100,7 +100,9 @@ internal class Program
                 DrawAtPosition(snakePositionX, snakePositionY, SNAKE_HEAD_SYMBOL);
                 currentMovement = currentPressedKey;
                 isGameOver = CheckGameOver(snakePositionY, snakePositionX, playFieldWidth, playFieldHeight);
+                currentPressedKey = "";
             }
+            
             else
             {
                 if (currentMovement == "W" || currentMovement == "A" || currentMovement == "S" || currentMovement == "D")
@@ -108,19 +110,19 @@ internal class Program
                     //aktuelle Position des Schlangenkopfes löschen
                     DrawAtPosition(snakePositionX, snakePositionY, SPACE);
 
-                    if (currentPressedKey == "W")
+                    if (currentMovement == "W")
                     {
                         snakePositionY = snakePositionY - 1;
                     }
-                    if (currentPressedKey == "A")
+                    if (currentMovement == "A")
                     {
                         snakePositionX = snakePositionX - 1;
                     }
-                    if (currentPressedKey == "S")
+                    if (currentMovement == "S")
                     {
                         snakePositionY = snakePositionY + 1;
                     }
-                    if (currentPressedKey == "D")
+                    if (currentMovement == "D")
                     {
                         snakePositionX = snakePositionX + 1;
                     }
