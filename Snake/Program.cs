@@ -32,35 +32,35 @@ internal class Program
         bool isGameOver = false;
 
         //DrawGamePanel gibt die Größe des Spielfeldes zurück
-        int[] fieldValues = DrawGamePanel(); 
+        int[] fieldValues = DrawGamePanel();
         int playFieldWidth = fieldValues[0];
         int playFieldHeight = fieldValues[1];
 
-        Position snakePos = new Position();
+        Position snakeHeadPos = new Position();
 
-        snakePos.x = playFieldWidth / 2;
-        snakePos.y = playFieldHeight / 2 + 1;
+        snakeHeadPos.x = playFieldWidth / 2;
+        snakeHeadPos.y = playFieldHeight / 2 + 1;
 
-        DrawAtPosition(snakePos, SNAKE_HEAD_SYMBOL);
+        DrawAtPosition(snakeHeadPos, SNAKE_HEAD_SYMBOL);
 
         List<Position> snakePositions = new List<Position>();
-        snakePositions.Add(snakePos);
+        //snakePositions.Add(snakeHeadPos);
 
         string currentPressedKey = "";
         string lastPressedKey = "";
         var currentMovement = "";
 
         Position fruitPos = new Position();
-        fruitPos.x = 0;
-        fruitPos.y = 0;
         bool isFruitExisting = false;
+        int snakeLenght = 0;
+        int i = 0;
 
 
         while (isGameOver == false)
         {
             if (isFruitExisting == false)
             {
-                int[] fruitPosition = GetRandomFruitPositions(playFieldWidth, playFieldHeight, snakePos, fruitPos);
+                int[] fruitPosition = GetRandomFruitPositions(playFieldWidth, playFieldHeight, snakeHeadPos, fruitPos);
                 fruitPos.x = fruitPosition[0];
                 fruitPos.y = fruitPosition[1];
                 Console.SetCursorPosition(fruitPos.x, fruitPos.y);
@@ -68,12 +68,9 @@ internal class Program
                 isFruitExisting = true;
             }
 
-            int snakeEndpositionX = snakePos.x;
-            int snakeEndpositionY = snakePos.x;
-
             //Wenn Taste gedrückt wird
             if (Console.KeyAvailable)
-            { 
+            {
                 //Speicher den Wert der Taste in eine Variable
                 currentPressedKey = Console.ReadKey(true).Key.ToString();
 
@@ -86,66 +83,70 @@ internal class Program
             if (IsPressedKeyMovementKey(currentPressedKey))
             {
                 //aktuelle Position des Schlangenkopfes löschen
-                DrawAtPosition(snakePos, SPACE);
+                //DrawAtPosition(snakeHeadPos, SPACE);
+                //aktuelle Schlange zeichnen
 
                 if (currentPressedKey == "W")
                 {
-                    snakePos.y -= 1;
+                    snakeHeadPos.y--;
                 }
                 if (currentPressedKey == "A")
                 {
-                    snakePos.x -= 1;
+                    snakeHeadPos.x--;
                 }
                 if (currentPressedKey == "S")
                 {
-                    snakePos.y += 1;
+                    snakeHeadPos.y++;
                 }
                 if (currentPressedKey == "D")
                 {
-                    snakePos.x += 1;
+                    snakeHeadPos.x++;
                 }
 
-                DrawAtPosition(snakePos, SNAKE_HEAD_SYMBOL);
+                DrawAtPosition(snakeHeadPos, SNAKE_HEAD_SYMBOL);
                 currentMovement = currentPressedKey;
-                isGameOver = CheckGameOver(snakePos, playFieldWidth, playFieldHeight);
+                isGameOver = CheckGameOver(snakeHeadPos, playFieldWidth, playFieldHeight);
                 currentPressedKey = "";
-            }          
+            }
             else
             {
                 if (currentMovement == "W" || currentMovement == "A" || currentMovement == "S" || currentMovement == "D")
                 {
                     //aktuelle Position des Schlangenkopfes löschen
-                    DrawAtPosition(snakePos, SPACE);
+                    //DrawAtPosition(snakeHeadPos, SPACE);
+                    //aktuelle Schlange zeichnen
 
                     if (currentMovement == "W")
                     {
-                        snakePos.y -= 1;
+                        snakeHeadPos.y--;
                     }
-                    if (currentMovement == "A")
+                    else if (currentMovement == "A")
                     {
-                        snakePos.x -= 1;
+                        snakeHeadPos.x--;
                     }
-                    if (currentMovement == "S")
+                    else if (currentMovement == "S")
                     {
-                        snakePos.y += 1;
+                        snakeHeadPos.y++;
                     }
-                    if (currentMovement == "D")
+                    else if (currentMovement == "D")
                     {
-                        snakePos.x += 1;
+                        snakeHeadPos.x++;
                     }
-
-                    DrawAtPosition(snakePos, SNAKE_HEAD_SYMBOL);
-                    isGameOver = CheckGameOver(snakePos, playFieldWidth, playFieldHeight);
+                    DrawAtPosition(snakeHeadPos, SNAKE_HEAD_SYMBOL);
+                    isGameOver = CheckGameOver(snakeHeadPos, playFieldWidth, playFieldHeight);
                 }
             }
-
-            bool isFruitField = IsSnakeOnFruitField(snakePos, fruitPos);
+            bool isFruitField = IsSnakeOnFruitField(snakeHeadPos, fruitPos);
 
             if (isFruitField)
             {
-                snakePositions.Add(snakePos);
+                Position previouSnakeHeadPos = new Position();
+                previouSnakeHeadPos.x = snakeHeadPos.x;
+                previouSnakeHeadPos.y = snakeHeadPos.y;
+                snakePositions.Add(previouSnakeHeadPos);
+                snakeLenght++;
                 isFruitExisting = false;
-            }
+            }        
 
             await Task.Delay(200);
         }
