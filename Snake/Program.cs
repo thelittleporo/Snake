@@ -58,6 +58,12 @@ internal class Program
 
         while (isGameOver == false)
         {
+
+            if (snakeLenght > 0)
+            {
+                DrawAtPosition(snakePositions[snakeLenght - 1], SNAKE_BODY_SYMBOL);
+            }
+
             if (isFruitExisting == false)
             {
                 int[] fruitPosition = GetRandomFruitPositions(playFieldWidth, playFieldHeight, snakeHeadPos, fruitPos);
@@ -80,77 +86,72 @@ internal class Program
                 }
                 lastPressedKey = currentPressedKey;
             }
+            Position previouSnakeHeadPos = GetPreviousSnakePos(snakeHeadPos);
+
             if (IsPressedKeyMovementKey(currentPressedKey))
             {
                 //aktuelle Position des Schlangenkopfes löschen
-                //DrawAtPosition(snakeHeadPos, SPACE);
-                //aktuelle Schlange zeichnen
+                DrawAtPosition(snakeHeadPos, SPACE);
 
-                if (currentPressedKey == "W")
-                {
-                    snakeHeadPos.y--;
-                }
-                if (currentPressedKey == "A")
-                {
-                    snakeHeadPos.x--;
-                }
-                if (currentPressedKey == "S")
-                {
-                    snakeHeadPos.y++;
-                }
-                if (currentPressedKey == "D")
-                {
-                    snakeHeadPos.x++;
-                }
+                DoMovement(currentPressedKey, snakeHeadPos);
 
                 DrawAtPosition(snakeHeadPos, SNAKE_HEAD_SYMBOL);
                 currentMovement = currentPressedKey;
                 isGameOver = CheckGameOver(snakeHeadPos, playFieldWidth, playFieldHeight);
                 currentPressedKey = "";
             }
-            else
+            else if (IsPressedKeyMovementKey(currentMovement))
             {
-                if (currentMovement == "W" || currentMovement == "A" || currentMovement == "S" || currentMovement == "D")
-                {
-                    //aktuelle Position des Schlangenkopfes löschen
-                    //DrawAtPosition(snakeHeadPos, SPACE);
-                    //aktuelle Schlange zeichnen
+                //aktuelle Position des Schlangenkopfes löschen
+                DrawAtPosition(snakeHeadPos, SPACE);
 
-                    if (currentMovement == "W")
-                    {
-                        snakeHeadPos.y--;
-                    }
-                    else if (currentMovement == "A")
-                    {
-                        snakeHeadPos.x--;
-                    }
-                    else if (currentMovement == "S")
-                    {
-                        snakeHeadPos.y++;
-                    }
-                    else if (currentMovement == "D")
-                    {
-                        snakeHeadPos.x++;
-                    }
-                    DrawAtPosition(snakeHeadPos, SNAKE_HEAD_SYMBOL);
-                    isGameOver = CheckGameOver(snakeHeadPos, playFieldWidth, playFieldHeight);
-                }
+                DoMovement(currentMovement, snakeHeadPos);
+
+                DrawAtPosition(snakeHeadPos, SNAKE_HEAD_SYMBOL);
+                isGameOver = CheckGameOver(snakeHeadPos, playFieldWidth, playFieldHeight);
             }
+
             bool isFruitField = IsSnakeOnFruitField(snakeHeadPos, fruitPos);
 
             if (isFruitField)
             {
-                Position previouSnakeHeadPos = new Position();
-                previouSnakeHeadPos.x = snakeHeadPos.x;
-                previouSnakeHeadPos.y = snakeHeadPos.y;
                 snakePositions.Add(previouSnakeHeadPos);
                 snakeLenght++;
                 isFruitExisting = false;
-            }        
+            }
 
             await Task.Delay(200);
         }
         ShowGameOverScreen();
+    }
+
+    private static Position GetPreviousSnakePos(Position snakeHeadPos)
+    {
+        Position previouSnakeHeadPos = new Position();
+        previouSnakeHeadPos.x = snakeHeadPos.x;
+        previouSnakeHeadPos.y = snakeHeadPos.y;
+
+        return previouSnakeHeadPos;
+    }
+
+    private static void DoMovement(string pressedKey, Position snakeHeadPos)
+    {
+        if (pressedKey == "W")
+        {
+            snakeHeadPos.y--;
+        }
+        if (pressedKey == "A")
+        {
+            snakeHeadPos.x--;
+        }
+        if (pressedKey == "S")
+        {
+            snakeHeadPos.y++;
+        }
+        if (pressedKey == "D")
+        {
+            snakeHeadPos.x++;
+        }
     }
 
     private static void DrawAtPosition(Position Pos, string textOutput)
