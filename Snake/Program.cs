@@ -44,7 +44,6 @@ internal class Program
         DrawAtPosition(snakeHeadPos, SNAKE_HEAD_SYMBOL);
 
         List<Position> snakePositions = new List<Position>();
-        //snakePositions.Add(snakeHeadPos);
 
         string currentPressedKey = "";
         string lastPressedKey = "";
@@ -52,18 +51,13 @@ internal class Program
 
         Position fruitPos = new Position();
         bool isFruitExisting = false;
-        int snakeLenght = 0;
-        int i = 0;
+        int snakeBodyLenght = 0;
+        int roundsSinceFirstFruit = 0;
+        bool DoesSnakeBodyExist = false;
 
 
         while (isGameOver == false)
         {
-
-            if (snakeLenght > 0)
-            {
-                DrawAtPosition(snakePositions[snakeLenght - 1], SNAKE_BODY_SYMBOL);
-            }
-
             if (isFruitExisting == false)
             {
                 int[] fruitPosition = GetRandomFruitPositions(playFieldWidth, playFieldHeight, snakeHeadPos, fruitPos);
@@ -86,12 +80,20 @@ internal class Program
                 }
                 lastPressedKey = currentPressedKey;
             }
+            //Schlangenkopf vor Bewegung speichern
             Position previouSnakeHeadPos = GetPreviousSnakePos(snakeHeadPos);
 
             if (IsPressedKeyMovementKey(currentPressedKey))
             {
-                //aktuelle Position des Schlangenkopfes löschen
+                //Schlange löschen
                 DrawAtPosition(snakeHeadPos, SPACE);
+                if (DoesSnakeBodyExist)
+                {
+                    for (int i = 0; snakeBodyLenght > i ; i++)
+                    {
+                        DrawAtPosition(snakePositions[roundsSinceFirstFruit - 1 - i], SPACE);
+                    }
+                }
 
                 DoMovement(currentPressedKey, snakeHeadPos);
 
@@ -102,9 +104,15 @@ internal class Program
             }
             else if (IsPressedKeyMovementKey(currentMovement))
             {
-                //aktuelle Position des Schlangenkopfes löschen
+                //Schlange löschen
                 DrawAtPosition(snakeHeadPos, SPACE);
-
+                if (DoesSnakeBodyExist)
+                {
+                    for (int i = 0; snakeBodyLenght > i; i++)
+                    {
+                        DrawAtPosition(snakePositions[roundsSinceFirstFruit - 1 - i], SPACE);
+                    }
+                }
                 DoMovement(currentMovement, snakeHeadPos);
 
                 DrawAtPosition(snakeHeadPos, SNAKE_HEAD_SYMBOL);
@@ -115,11 +123,21 @@ internal class Program
 
             if (isFruitField)
             {
-                snakePositions.Add(previouSnakeHeadPos);
-                snakeLenght++;
+                snakeBodyLenght++;
                 isFruitExisting = false;
+                DoesSnakeBodyExist = true;
             }
 
+            if (DoesSnakeBodyExist)
+            {
+                snakePositions.Add(previouSnakeHeadPos);
+                
+                for (int i = 0; snakeBodyLenght > i; i++)
+                {
+                    DrawAtPosition(snakePositions[roundsSinceFirstFruit - i], SNAKE_BODY_SYMBOL);
+                }
+                roundsSinceFirstFruit++;
+            }
             await Task.Delay(200);
         }
         ShowGameOverScreen();
@@ -160,9 +178,9 @@ internal class Program
         Console.Write(textOutput);
     }
 
-    private static bool IsSnakeOnFruitField(Position snakePos, Position fruitPos)
+    private static bool IsSnakeOnFruitField(Position snakeHeadPos, Position fruitPos)
     {
-        if (snakePos.y == fruitPos.y && snakePos.x == fruitPos.x)
+        if (snakeHeadPos.y == fruitPos.y && snakeHeadPos.x == fruitPos.x)
         {
             return true;
         }
@@ -194,9 +212,9 @@ internal class Program
         Console.ReadKey();
     }
 
-    private static bool CheckGameOver(Position snakePos, int playFieldWidth, int playFieldHeight)
+    private static bool CheckGameOver(Position snakeHeadPos, int playFieldWidth, int playFieldHeight)
     {
-        if (snakePos.y <= 0 || snakePos.x <= 0 || snakePos.y == (playFieldHeight + 1) || snakePos.x == (playFieldWidth - 1))
+        if (snakeHeadPos.y <= 0 || snakeHeadPos.x <= 0 || snakeHeadPos.y == (playFieldHeight + 1) || snakeHeadPos.x == (playFieldWidth - 1))
         {
             return true;
         }
