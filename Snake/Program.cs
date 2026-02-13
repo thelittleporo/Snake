@@ -14,9 +14,9 @@ namespace Snake2;
 
 internal class Program
 {
-    public const string SNAKE_HEAD_SYMBOL = ">"; //🐲
-    public const string SNAKE_BODY_SYMBOL = "+";
-    public const string FRUIT_SYMBOL = "*";
+    public const string SNAKE_HEAD_SYMBOL = "█";
+    public const string SNAKE_BODY_SYMBOL = "█";
+    public const string FRUIT_SYMBOL = "●";
     public const string SPACE = " ";
 
     static async Task Main(string[] args)
@@ -63,13 +63,14 @@ internal class Program
         {
             if (isFruitExisting == false)
             {
-                int[] fruitPosition = GetRandomFruitPositions(playFieldWidth, playFieldHeight, snakeHeadPos, fruitPos);
+                int[] fruitPosition = GetRandomFruitPositions(playFieldWidth, playFieldHeight, snakeHeadPos, fruitPos, currentSnakePosition);
                 fruitPos.x = fruitPosition[0];
                 fruitPos.y = fruitPosition[1];
                 Console.SetCursorPosition(fruitPos.x, fruitPos.y);
                 Console.WriteLine(FRUIT_SYMBOL);
                 isFruitExisting = true;
             }
+            currentSnakePosition.Clear();
 
             //Wenn Taste gedrückt wird
             if (Console.KeyAvailable)
@@ -143,8 +144,6 @@ internal class Program
             }
             isGameOver = CheckGameOver(snakeHeadPos, playFieldWidth, playFieldHeight, currentSnakePosition);
 
-            currentSnakePosition.Clear();
-
             await Task.Delay(200);
         }
         ShowGameOverScreen();
@@ -197,14 +196,16 @@ internal class Program
         }
     }
 
-    private static int[] GetRandomFruitPositions(int playFieldWidth, int playFieldHeight, Position snakePos, Position fruitPos)
+    private static int[] GetRandomFruitPositions(int playFieldWidth, int playFieldHeight, Position snakePos, Position fruitPos, List <Position> currentSnakePosition)
     {
         Random random = new Random();
         fruitPos.x = random.Next(1, playFieldWidth - 2);
         fruitPos.y = random.Next(1, playFieldHeight - 1);
-        if (fruitPos.x == snakePos.x && fruitPos.y == snakePos.y)
+
+        while (fruitPos == snakePos || currentSnakePosition.Contains(fruitPos))
         {
-            fruitPos.x += 2;
+            fruitPos.x = random.Next(1, playFieldWidth - 2);
+            fruitPos.y = random.Next(1, playFieldHeight - 1);
         }
 
         int[] FruitPositions = { fruitPos.x, fruitPos.y };
