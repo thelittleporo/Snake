@@ -43,7 +43,10 @@ internal class Program
 
         DrawAtPosition(snakeHeadPos, SNAKE_HEAD_SYMBOL);
 
-        List<Position> snakePositions = new List<Position>();
+        //allSnakePositions wird nie gelöscht und speichert somit x Positionen des Schlangenkörpers
+        List<Position> allSnakePositions = new List<Position>();
+        //curentSnakePosition speichert immer nur für 1 Runde, alle Positionen des aktuellen Schlangenkörpers
+        List<Position> currentSnakePosition = new List<Position>();
 
         string currentPressedKey = "";
         string lastPressedKey = "";
@@ -80,43 +83,38 @@ internal class Program
                 }
                 lastPressedKey = currentPressedKey;
             }
-            //Schlangenkopf vor Bewegung speichern
+            //Schlangenkopf vor Bewegung speichern - für den Körper, falls eine Frucht eingesammelt wird
             Position previouSnakeHeadPos = GetPreviousSnakePos(snakeHeadPos);
 
             if (IsPressedKeyMovementKey(currentPressedKey))
             {
-                //Schlange löschen
+                //Schlange (Kopf und Körper) löschen
                 DrawAtPosition(snakeHeadPos, SPACE);
                 if (DoesSnakeBodyExist)
                 {
                     for (int i = 0; snakeBodyLenght > i ; i++)
                     {
-                        DrawAtPosition(snakePositions[roundsSinceFirstFruit - 1 - i], SPACE);
+                        DrawAtPosition(allSnakePositions[roundsSinceFirstFruit - 1 - i], SPACE);
                     }
                 }
 
                 DoMovement(currentPressedKey, snakeHeadPos);
 
-                DrawAtPosition(snakeHeadPos, SNAKE_HEAD_SYMBOL);
                 currentMovement = currentPressedKey;
-                isGameOver = CheckGameOver(snakeHeadPos, playFieldWidth, playFieldHeight);
                 currentPressedKey = "";
             }
             else if (IsPressedKeyMovementKey(currentMovement))
             {
-                //Schlange löschen
+                //Schlange (Kopf und Körper) löschen
                 DrawAtPosition(snakeHeadPos, SPACE);
                 if (DoesSnakeBodyExist)
                 {
                     for (int i = 0; snakeBodyLenght > i; i++)
                     {
-                        DrawAtPosition(snakePositions[roundsSinceFirstFruit - 1 - i], SPACE);
+                        DrawAtPosition(allSnakePositions[roundsSinceFirstFruit - 1 - i], SPACE);
                     }
                 }
                 DoMovement(currentMovement, snakeHeadPos);
-
-                DrawAtPosition(snakeHeadPos, SNAKE_HEAD_SYMBOL);
-                isGameOver = CheckGameOver(snakeHeadPos, playFieldWidth, playFieldHeight);
             }
 
             bool isFruitField = IsSnakeOnFruitField(snakeHeadPos, fruitPos);
@@ -128,16 +126,25 @@ internal class Program
                 DoesSnakeBodyExist = true;
             }
 
+            //Schlangenkopf zeichnen
+            DrawAtPosition(snakeHeadPos, SNAKE_HEAD_SYMBOL);
+
             if (DoesSnakeBodyExist)
             {
-                snakePositions.Add(previouSnakeHeadPos);
-                
+                allSnakePositions.Add(previouSnakeHeadPos);
+
+                //Schlangenkörper zeichnen
                 for (int i = 0; snakeBodyLenght > i; i++)
                 {
-                    DrawAtPosition(snakePositions[roundsSinceFirstFruit - i], SNAKE_BODY_SYMBOL);
+                    DrawAtPosition(allSnakePositions[roundsSinceFirstFruit - i], SNAKE_BODY_SYMBOL);
+                    currentSnakePosition.Add(allSnakePositions[roundsSinceFirstFruit - i]);
                 }
                 roundsSinceFirstFruit++;
             }
+            isGameOver = CheckGameOver(snakeHeadPos, playFieldWidth, playFieldHeight, currentSnakePosition);
+
+            currentSnakePosition.Clear();
+
             await Task.Delay(200);
         }
         ShowGameOverScreen();
@@ -212,9 +219,14 @@ internal class Program
         Console.ReadKey();
     }
 
-    private static bool CheckGameOver(Position snakeHeadPos, int playFieldWidth, int playFieldHeight)
+    private static bool CheckGameOver(Position snakeHeadPos, int playFieldWidth, int playFieldHeight, List <Position> currentSnakeBodyPosition)
     {
+
         if (snakeHeadPos.y <= 0 || snakeHeadPos.x <= 0 || snakeHeadPos.y == (playFieldHeight + 1) || snakeHeadPos.x == (playFieldWidth - 1))
+        {
+            return true;
+        }
+        else if (currentSnakeBodyPosition.Contains(snakeHeadPos))
         {
             return true;
         }
