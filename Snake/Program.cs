@@ -160,19 +160,19 @@ internal class Program
 
     private static void DoMovement(string pressedKey, Position snakeHeadPos)
     {
-        if (pressedKey == "W")
+        if (pressedKey == "W" || pressedKey == "UpArrow")
         {
             snakeHeadPos.y--;
         }
-        if (pressedKey == "A")
+        if (pressedKey == "A" || pressedKey == "LeftArrow")
         {
             snakeHeadPos.x--;
         }
-        if (pressedKey == "S")
+        if (pressedKey == "S" || pressedKey == "DownArrow")
         {
             snakeHeadPos.y++;
         }
-        if (pressedKey == "D")
+        if (pressedKey == "D" || pressedKey == "RightArrow")
         {
             snakeHeadPos.x++;
         }
@@ -239,7 +239,8 @@ internal class Program
 
     private static bool IsPressedKeyMovementKey(string? pressedKey)
     {
-        if (pressedKey == "W" || pressedKey == "A" || pressedKey == "S" || pressedKey == "D")
+        if (pressedKey == "W" || pressedKey == "A" || pressedKey == "S" || pressedKey == "D" || 
+            pressedKey == "UpArrow" || pressedKey == "RightArrow" || pressedKey == "LeftArrow" || pressedKey == "DownArrow")
             return true;
         else
             return false;
