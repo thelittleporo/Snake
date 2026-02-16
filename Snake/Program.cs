@@ -24,7 +24,11 @@ internal class Program
         Console.OutputEncoding = Encoding.UTF8; //für Unicode Zeichen       
         ShowWelcomeScreen();
 
-        await StartSingleRoundOfSnake();
+        while (true)
+        {
+            await StartSingleRoundOfSnake();
+        }
+
     }
 
     private async static Task StartSingleRoundOfSnake()
@@ -61,7 +65,7 @@ internal class Program
         while (isGameOver == false)
         {
             Console.SetCursorPosition(0, playFieldHeight + 2);
-            Console.WriteLine($"Punkte: {snakeBodyLenght}");
+            Console.WriteLine($"Score: {snakeBodyLenght}");
 
             if (isFruitExisting == false)
             {
@@ -219,7 +223,10 @@ internal class Program
         Console.Clear();
         Console.WriteLine("=====================");
         Console.WriteLine("     Game Over!   ");
+        Console.WriteLine("=====================");
+        Console.WriteLine("\n\nPress any key to play again!");
         Console.ReadKey();
+        Console.Clear();
     }
 
     private static bool CheckGameOver(Position snakeHeadPos, int playFieldWidth, int playFieldHeight, List <Position> currentSnakeBodyPosition)
