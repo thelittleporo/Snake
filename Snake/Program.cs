@@ -179,7 +179,10 @@ internal class Program
             else
             {
                 await Task.Delay(delay);
-                delay = delay - 1;
+                if (roundsSinceFirstFruit % 2 == 0)
+                {
+                    delay = delay - 1;
+                }
             }
 
         }
@@ -261,7 +264,7 @@ internal class Program
             "                                                               \r\n" +
             "                                                               ");
         Console.WriteLine($"\nYour Score is: {snakeBodyLenght}");
-        await Task.Delay(300);
+        await Task.Delay(800);
 
         Console.WriteLine("\n\nPress any key to play again!");
         Console.ReadKey();
@@ -312,13 +315,13 @@ internal class Program
         const int minHeight = 5;
 
         Console.WriteLine("Tipp: Für schöneres Ergebnis ungerade Zahlen eingeben!\n");
-        Console.Write("Please enter field size horizontal (default 15): ");
+        Console.Write($"Please enter field size horizontal between {minWidth} and {maxWidth}: ");
 
         while (!int.TryParse(Console.ReadLine(), out playFieldWidth) || (playFieldWidth > maxWidth || playFieldWidth < minWidth))
         {
             Console.Write($"Please enter a number between {minWidth} and {maxWidth} eingeben: ");
         }
-        Console.Write("Please enter field size vertical (default 7): ");
+        Console.Write($"Please enter field size vertical between {minHeight} and {maxHeight}: ");
 
         while (!int.TryParse(Console.ReadLine(), out playFieldHeight) || (playFieldHeight > maxHeight || playFieldHeight < minHeight))
         {
@@ -360,7 +363,7 @@ internal class Program
     {
         int difficulty = 0;
 
-        Console.Write("Select difficulty level (normal = 1, medium = 2, difficult = 3: ");
+        Console.Write("Select difficulty level normal = 1, medium = 2, difficult = 3: ");
 
         while (!int.TryParse(Console.ReadLine(), out difficulty) || (difficulty > 3 || difficulty < 1))
         {
