@@ -18,6 +18,7 @@ internal class Program
     public const string SNAKE_BODY_SYMBOL = "█";
     public const string FRUIT_SYMBOL = "●";
     public const string SPACE = " ";
+    public const string BARRIER = "⚠";
 
     static async Task Main(string[] args)
     {
@@ -28,12 +29,12 @@ internal class Program
         {
             await StartSingleRoundOfSnake();
         }
-
     }
 
     private async static Task StartSingleRoundOfSnake()
     {
         bool isGameOver = false;
+        int difficulty = SetDifficulty();
 
         //DrawGamePanel gibt die Größe des Spielfeldes zurück
         int[] fieldValues = DrawGamePanel();
@@ -51,6 +52,8 @@ internal class Program
         List<Position> allSnakePositions = new List<Position>();
         //curentSnakePosition speichert immer nur für 1 Runde, alle Positionen des aktuellen Schlangenkörpers
         List<Position> currentSnakePosition = new List<Position>();
+        //speichert alle Positionen der Barrieren
+        List<Position> barrierPositions = new List<Position>();
 
         string currentPressedKey = "";
         string lastPressedKey = "";
@@ -61,6 +64,7 @@ internal class Program
         int snakeBodyLenght = 0;
         int roundsSinceFirstFruit = 0;
         bool DoesSnakeBodyExist = false;
+        int delay = 200;
 
         while (isGameOver == false)
         {
@@ -69,13 +73,33 @@ internal class Program
 
             if (isFruitExisting == false)
             {
-                int[] fruitPosition = GetRandomFruitPositions(playFieldWidth, playFieldHeight, snakeHeadPos, fruitPos, currentSnakePosition);
+                if (difficulty > 1)
+                {
+                    //Barriere erstellen
+                    Position barrierPos = new Position();
+                    int[] barrierPosition = GetRandomPosition(playFieldWidth, playFieldHeight, snakeHeadPos, fruitPos, currentSnakePosition);
+                    barrierPos.x = barrierPosition[0];
+                    barrierPos.y = barrierPosition[1];
+                    Console.SetCursorPosition(barrierPos.x, barrierPos.y);
+                    Console.WriteLine(BARRIER);
+                    barrierPositions.Add(barrierPos);
+                }
+
+                //Frucht erstellen
+                int[] fruitPosition = GetRandomPosition(playFieldWidth, playFieldHeight, snakeHeadPos, fruitPos, currentSnakePosition);
                 fruitPos.x = fruitPosition[0];
                 fruitPos.y = fruitPosition[1];
+                while (barrierPositions.Contains(fruitPos))
+                {
+                    fruitPosition = GetRandomPosition(playFieldWidth, playFieldHeight, snakeHeadPos, fruitPos, currentSnakePosition);
+                    fruitPos.x = fruitPosition[0];
+                    fruitPos.y = fruitPosition[1];
+                }
                 Console.SetCursorPosition(fruitPos.x, fruitPos.y);
                 Console.WriteLine(FRUIT_SYMBOL);
-                isFruitExisting = true;
+                isFruitExisting = true;              
             }
+
             currentSnakePosition.Clear();
 
             //Wenn Taste gedrückt wird
@@ -124,9 +148,7 @@ internal class Program
                 DoMovement(currentMovement, snakeHeadPos);
             }
 
-            bool isFruitField = IsSnakeOnFruitField(snakeHeadPos, fruitPos);
-
-            if (isFruitField)
+            if (IsSnakeOnFruitField(snakeHeadPos, fruitPos))
             {
                 snakeBodyLenght++;
                 isFruitExisting = false;
@@ -148,11 +170,20 @@ internal class Program
                 }
                 roundsSinceFirstFruit++;
             }
-            isGameOver = CheckGameOver(snakeHeadPos, playFieldWidth, playFieldHeight, currentSnakePosition);
+            isGameOver = CheckGameOver(snakeHeadPos, playFieldWidth, playFieldHeight, currentSnakePosition, barrierPositions);
 
-            await Task.Delay(200);
+            if (difficulty < 3)
+            {
+                await Task.Delay(delay);
+            }
+            else
+            {
+                await Task.Delay(delay);
+                delay = delay - 1;
+            }
+
         }
-        ShowGameOverScreen();
+        await ShowGameOverScreenAsync(snakeBodyLenght);
     }
 
     private static Position GetPreviousSnakePos(Position snakeHeadPos)
@@ -202,7 +233,7 @@ internal class Program
         }
     }
 
-    private static int[] GetRandomFruitPositions(int playFieldWidth, int playFieldHeight, Position snakePos, Position fruitPos, List <Position> currentSnakePosition)
+    private static int[] GetRandomPosition(int playFieldWidth, int playFieldHeight, Position snakePos, Position fruitPos, List <Position> currentSnakePosition)
     {
         Random random = new Random();
         fruitPos.x = random.Next(1, playFieldWidth - 2);
@@ -218,25 +249,28 @@ internal class Program
         return FruitPositions;
     }
 
-    private static void ShowGameOverScreen()
+    private static async Task ShowGameOverScreenAsync(int snakeBodyLenght)
     {
         Console.Clear();
         Console.WriteLine("=====================");
         Console.WriteLine("     Game Over!   ");
         Console.WriteLine("=====================");
+        Console.WriteLine($"\nYour Score is: {snakeBodyLenght}");
+        await Task.Delay(300);
+
         Console.WriteLine("\n\nPress any key to play again!");
         Console.ReadKey();
         Console.Clear();
     }
 
-    private static bool CheckGameOver(Position snakeHeadPos, int playFieldWidth, int playFieldHeight, List <Position> currentSnakeBodyPosition)
+    private static bool CheckGameOver(Position snakeHeadPos, int playFieldWidth, int playFieldHeight, List <Position> currentSnakeBodyPosition, List<Position> barrierPositions)
     {
 
         if (snakeHeadPos.y <= 0 || snakeHeadPos.x <= 0 || snakeHeadPos.y == (playFieldHeight + 1) || snakeHeadPos.x == (playFieldWidth - 1))
         {
             return true;
         }
-        else if (currentSnakeBodyPosition.Contains(snakeHeadPos))
+        else if (currentSnakeBodyPosition.Contains(snakeHeadPos) || (barrierPositions.Contains(snakeHeadPos)))
         {
             return true;
         }
@@ -269,23 +303,22 @@ internal class Program
         int playFieldHeight;
         const int maxWidth = 100;
         const int minWidth = 5;
-        const int maxHeight = 25;
+        const int maxHeight = 24;
         const int minHeight = 5;
 
         Console.WriteLine("Tipp: Für schöneres Ergebnis ungerade Zahlen eingeben!\n");
         Console.Write("Please enter field size horizontal (default 15): ");
 
-        while (!int.TryParse(Console.ReadLine(), out playFieldWidth) || playFieldWidth <= maxWidth && playFieldWidth <= minWidth)
+        while (!int.TryParse(Console.ReadLine(), out playFieldWidth) || (playFieldWidth > maxWidth || playFieldWidth < minWidth))
         {
-            Console.Write($"Bitte eine Zahl zwischen {minWidth} und {maxWidth} eingeben: ");
+            Console.Write($"Please enter a number between {minWidth} and {maxWidth} eingeben: ");
         }
         Console.Write("Please enter field size vertical (default 7): ");
 
-        while (!int.TryParse(Console.ReadLine(), out playFieldHeight) || playFieldHeight <= maxHeight && playFieldHeight <= minHeight)
+        while (!int.TryParse(Console.ReadLine(), out playFieldHeight) || (playFieldHeight > maxHeight || playFieldHeight < minHeight))
         {
-            Console.Write($"Bitte eine Zahl zwischen {minHeight} und {maxHeight} eingeben: ");
+            Console.Write($"Please enter a number between {minHeight} and {maxHeight}: ");
         }
-
         Console.Clear();
 
         //Cage erstellen
@@ -316,5 +349,20 @@ internal class Program
 
         int[] returnFieldvalues = { playFieldWidth, playFieldHeight };
         return returnFieldvalues;
+    }
+
+    private static int SetDifficulty()
+    {
+        int difficulty = 0;
+
+        Console.Write("Select difficulty level (normal = 1, medium = 2, difficult = 3: ");
+
+        while (!int.TryParse(Console.ReadLine(), out difficulty) || (difficulty > 3 || difficulty < 1))
+        {
+            Console.Write($"Please enter the number 1, 2 or 3: ");
+        }
+        Console.Clear();
+        return difficulty;
+        
     }
 }
