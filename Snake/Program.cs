@@ -22,7 +22,7 @@ internal class Program
     static async Task Main(string[] args)
     {
         Console.OutputEncoding = Encoding.UTF8; //für Unicode Zeichen       
-        //ShowWelcomeScreen();
+        ShowWelcomeScreen();
 
         await StartSingleRoundOfSnake();
     }
@@ -58,9 +58,11 @@ internal class Program
         int roundsSinceFirstFruit = 0;
         bool DoesSnakeBodyExist = false;
 
-
         while (isGameOver == false)
         {
+            Console.SetCursorPosition(0, playFieldHeight + 2);
+            Console.WriteLine($"Punkte: {snakeBodyLenght}");
+
             if (isFruitExisting == false)
             {
                 int[] fruitPosition = GetRandomFruitPositions(playFieldWidth, playFieldHeight, snakeHeadPos, fruitPos, currentSnakePosition);
@@ -236,7 +238,6 @@ internal class Program
             return false;
         }
     }
-
     private static bool IsPressedKeyMovementKey(string? pressedKey)
     {
         if (pressedKey == "W" || pressedKey == "A" || pressedKey == "S" || pressedKey == "D" || 
@@ -245,7 +246,6 @@ internal class Program
         else
             return false;
     }
-
     private static void ShowWelcomeScreen()
     {
         Console.WriteLine("=========================");
@@ -265,21 +265,19 @@ internal class Program
         const int maxHeight = 25;
         const int minHeight = 5;
 
-        //Console.WriteLine("Tipp: Für schöneres Ergebnis ungerade Zahlen eingeben!\n");
-        //Console.Write("Please enter field size horizontal (default 15): ");
+        Console.WriteLine("Tipp: Für schöneres Ergebnis ungerade Zahlen eingeben!\n");
+        Console.Write("Please enter field size horizontal (default 15): ");
 
-        //while (!int.TryParse(Console.ReadLine(), out playFieldWidth) || playFieldWidth <= maxWidth && playFieldWidth <= minWidth)
-        //{
-        //    Console.Write($"Bitte eine Zahl zwischen {minWidth} und {maxWidth} eingeben: ");
-        //}
-        //Console.Write("Please enter field size vertical (default 7): ");
+        while (!int.TryParse(Console.ReadLine(), out playFieldWidth) || playFieldWidth <= maxWidth && playFieldWidth <= minWidth)
+        {
+            Console.Write($"Bitte eine Zahl zwischen {minWidth} und {maxWidth} eingeben: ");
+        }
+        Console.Write("Please enter field size vertical (default 7): ");
 
-        //while (!int.TryParse(Console.ReadLine(), out playFieldHeight) || playFieldHeight <= maxHeight && playFieldHeight <= minHeight)
-        //{
-        //    Console.Write($"Bitte eine Zahl zwischen {minHeight} und {maxHeight} eingeben: ");
-        //}
-        playFieldWidth = 15;
-        playFieldHeight = 7;
+        while (!int.TryParse(Console.ReadLine(), out playFieldHeight) || playFieldHeight <= maxHeight && playFieldHeight <= minHeight)
+        {
+            Console.Write($"Bitte eine Zahl zwischen {minHeight} und {maxHeight} eingeben: ");
+        }
 
         Console.Clear();
 
