@@ -252,9 +252,14 @@ internal class Program
     private static async Task ShowGameOverScreenAsync(int snakeBodyLenght)
     {
         Console.Clear();
-        Console.WriteLine("=====================");
-        Console.WriteLine("     Game Over!   ");
-        Console.WriteLine("=====================");
+        Console.WriteLine("   _____          __  __ ______    ______      ________ _____  \r\n" +
+            "  / ____|   /\\   |  \\/  |  ____|  / __ \\ \\    / /  ____|  __ \\ \r\n" +
+            " | |  __   /  \\  | \\  / | |__    | |  | \\ \\  / /| |__  | |__) |\r\n" +
+            " | | |_ | / /\\ \\ | |\\/| |  __|   | |  | |\\ \\/ / |  __| |  _  / \r\n" +
+            " | |__| |/ ____ \\| |  | | |____  | |__| | \\  /  | |____| | \\ \\ \r\n" +
+            "  \\_____/_/    \\_\\_|  |_|______|  \\____/   \\/   |______|_|  \\_\\\r\n" +
+            "                                                               \r\n" +
+            "                                                               ");
         Console.WriteLine($"\nYour Score is: {snakeBodyLenght}");
         await Task.Delay(300);
 
