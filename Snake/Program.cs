@@ -8,6 +8,8 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using System.Xml.Serialization;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Snake2;
@@ -21,17 +23,33 @@ internal class Program
     public const string BARRIER = "⚠";
 
     static async Task Main(string[] args)
-    {
-        Console.OutputEncoding = Encoding.UTF8; //für Unicode Zeichen       
+    {  
+        //für Unicode Zeichen
+        Console.OutputEncoding = Encoding.UTF8;
+        //HighScore Liste
+        List<HighScore> highscores = new List<HighScore>();
+        LoadHighScore(highscores);
+
         ShowWelcomeScreen();
 
         while (true)
         {
-            await StartSingleRoundOfSnake();
+            await StartSingleRoundOfSnake(highscores);
         }
     }
 
-    private async static Task StartSingleRoundOfSnake()
+    private static void LoadHighScore(List<HighScore> highscores)
+    {
+        var serializer = new XmlSerializer(highscores.GetType(), "HighScores.Scores");
+        object obj;
+        using (var reader = new StreamReader("highscores.xml"))
+        {
+            obj = serializer.Deserialize(reader.BaseStream);
+        }
+        highscores = (List<HighScore>)obj;
+    }
+
+    private async static Task StartSingleRoundOfSnake(List<HighScore> highscores)
     {
         bool isGameOver = false;
         int difficulty = SetDifficulty();
@@ -186,7 +204,7 @@ internal class Program
             }
 
         }
-        await ShowGameOverScreenAsync(snakeBodyLenght);
+        await ShowGameOverScreenAsync(snakeBodyLenght, highscores);
     }
 
     private static Position GetPreviousSnakePos(Position snakeHeadPos)
@@ -252,7 +270,7 @@ internal class Program
         return FruitPositions;
     }
 
-    private static async Task ShowGameOverScreenAsync(int snakeBodyLenght)
+    private static async Task ShowGameOverScreenAsync(int snakeBodyLenght, List<HighScore> highscores)
     {
         Console.Clear();
         Console.WriteLine("   _____          __  __ ______    ______      ________ _____  \r\n" +
@@ -264,11 +282,28 @@ internal class Program
             "                                                               \r\n" +
             "                                                               ");
         Console.WriteLine($"\nYour Score is: {snakeBodyLenght}");
-        await Task.Delay(800);
+        await Task.Delay(900);
+        Console.Write("Please enter your Name: ");
+        string name = Console.ReadLine();
+
+        SaveHighScore(snakeBodyLenght, name, highscores);
 
         Console.WriteLine("\n\nPress any key to play again!");
         Console.ReadKey();
         Console.Clear();
+    }
+
+    private static void SaveHighScore(int snakeBodyLenght, string name, List <HighScore> highscores)
+    {
+        var score = new HighScore() { Score = snakeBodyLenght, PlayerName = name };
+        highscores.Add(score);
+
+        var serializer = new XmlSerializer(highscores.GetType(), "HighScores.Scores");
+        using (var writer = new StreamWriter("highscores.xml", false))
+        {
+            serializer.Serialize(writer.BaseStream, highscores);
+        }
+
     }
 
     private static bool CheckGameOver(Position snakeHeadPos, int playFieldWidth, int playFieldHeight, List <Position> currentSnakeBodyPosition, List<Position> barrierPositions)
