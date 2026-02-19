@@ -27,8 +27,7 @@ internal class Program
         //für Unicode Zeichen
         Console.OutputEncoding = Encoding.UTF8;
         //HighScore Liste
-        List<HighScore> highscores = new List<HighScore>();
-        LoadHighScore(highscores);
+        List<HighScore> highscores = new List<HighScore>();                                        
 
         ShowWelcomeScreen();
 
@@ -36,17 +35,6 @@ internal class Program
         {
             await StartSingleRoundOfSnake(highscores);
         }
-    }
-
-    private static void LoadHighScore(List<HighScore> highscores)
-    {
-        var serializer = new XmlSerializer(highscores.GetType(), "HighScores.Scores");
-        object obj;
-        using (var reader = new StreamReader("highscores.xml"))
-        {
-            obj = serializer.Deserialize(reader.BaseStream);
-        }
-        highscores = (List<HighScore>)obj;
     }
 
     private async static Task StartSingleRoundOfSnake(List<HighScore> highscores)
@@ -286,7 +274,8 @@ internal class Program
         Console.Write("Please enter your Name: ");
         string name = Console.ReadLine();
 
-        SaveHighScore(snakeBodyLenght, name, highscores);
+        //SaveHighScore(snakeBodyLenght, name, highscores);
+
 
         Console.WriteLine("\n\nPress any key to play again!");
         Console.ReadKey();
@@ -297,12 +286,6 @@ internal class Program
     {
         var score = new HighScore() { Score = snakeBodyLenght, PlayerName = name };
         highscores.Add(score);
-
-        var serializer = new XmlSerializer(highscores.GetType(), "HighScores.Scores");
-        using (var writer = new StreamWriter("highscores.xml", false))
-        {
-            serializer.Serialize(writer.BaseStream, highscores);
-        }
 
     }
 
